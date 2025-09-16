@@ -1,0 +1,13 @@
+{
+  "name": "ar-bed-viewer",
+  "version": "1.0.0",
+  "description": "Visualizzatore AR per letti con dimensioni reali",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "build": "echo 'No build step required'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["ar", "webxr", "furniture", "3d"],
+  "author": "Your Name",
+  "license": "MIT"
+}
