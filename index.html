@@ -170,10 +170,14 @@
             alt="Letto evolutivo zero+ Earth"
             ar
             ar-modes="webxr scene-viewer quick-look"
+            ar-scale="fixed"
             camera-controls
             shadow-intensity="1"
             auto-rotate
-            auto-rotate-delay="3000">
+            auto-rotate-delay="3000"
+            camera-orbit="45deg 75deg 2.5m"
+            min-camera-orbit="auto auto 1m"
+            max-camera-orbit="auto auto 10m">
             
             <!-- AR Button -->
             <button slot="ar-button" style="
@@ -226,6 +230,24 @@
         modelViewer.addEventListener('load', () => {
             console.log('✅ Modello caricato con successo');
             loading.classList.remove('active');
+            
+            // Calcola e applica scala per dimensioni reali
+            try {
+                const dims = modelViewer.getDimensions();
+                console.log('Dimensioni modello originale:', dims);
+                
+                // Dimensioni target: 190cm = 1.9m
+                const targetLength = 1.9;
+                const currentLength = Math.max(dims.x, dims.y, dims.z);
+                const scale = targetLength / currentLength;
+                
+                console.log(`Scala calcolata: ${scale} per ottenere ${targetLength}m`);
+                modelViewer.scale = `${scale} ${scale} ${scale}`;
+            } catch (e) {
+                console.warn('Impossibile calcolare dimensioni:', e);
+                // Usa scala di default se il calcolo fallisce
+                modelViewer.scale = '0.01 0.01 0.01';
+            }
         });
 
         // Error handling
@@ -234,7 +256,8 @@
             loading.innerHTML = '❌ Errore caricamento modello';
             setTimeout(() => {
                 loading.classList.remove('active');
-            }, 3000);
+                alert('Errore nel caricamento del modello 3D. Verifica che il file models/completo_con_piedini.gltf esista.');
+            }, 1000);
         });
 
         // Progress loading
@@ -243,9 +266,41 @@
             loading.innerHTML = `🛏️ Caricamento ${Math.round(progress)}%`;
         });
 
-        // AR status
+        // AR status - Debug completo
         modelViewer.addEventListener('ar-status', (event) => {
-            console.log('AR Status:', event.detail.status);
+            console.log('🎯 AR Status:', event.detail.status);
+            
+            if (event.detail.status === 'session-started') {
+                console.log('✅ Sessione AR avviata!');
+                loading.innerHTML = '📱 AR Attiva';
+                loading.classList.add('active');
+                setTimeout(() => loading.classList.remove('active'), 2000);
+            } else if (event.detail.status === 'not-presenting') {
+                console.log('🔴 AR non disponibile');
+            } else if (event.detail.status === 'failed') {
+                console.error('❌ AR fallita:', event.detail);
+                alert('AR non disponibile su questo dispositivo. Usa un dispositivo iOS/Android compatibile.');
+            }
+        });
+        
+        // AR Tracking
+        modelViewer.addEventListener('ar-tracking', (event) => {
+            console.log('📍 AR Tracking:', event.detail.status);
+        });
+        
+        // Quick AR activation function
+        function activateAR() {
+            console.log('🚀 Attivazione AR...');
+            modelViewer.activateAR();
+        }
+        
+        // Auto-detect AR support
+        window.addEventListener('load', () => {
+            if (modelViewer.canActivateAR) {
+                console.log('✅ AR supportata su questo dispositivo');
+            } else {
+                console.log('❌ AR NON supportata su questo dispositivo');
+            }
         });
     </script>
 </body>
