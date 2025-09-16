@@ -342,7 +342,7 @@
         <!-- Model Viewer -->
         <model-viewer
             id="bedModel"
-            src="models/completo_con_piedini.gltf"
+            src="scene.gltf"
             alt="Set Completo Camera da Letto"
             ar
             ar-modes="scene-viewer webxr quick-look"
@@ -431,28 +431,17 @@
             document.querySelector('#measurements').classList.remove('active');
         }
 
-        // AR Session started
+        <!-- AR Session started -->
         modelViewer.addEventListener('ar-status', (event) => {
             if (event.detail.status === 'session-started') {
                 isInAR = true;
                 exitARButton.classList.add('active');
+                arControls.classList.add('active');
                 closeInstructions();
-                
-                // Mostra l'indicatore di posizionamento (simile ad Amazon)
-                const placementIndicator = document.getElementById('ar-placement-indicator');
-                placementIndicator.classList.remove('hidden');
-                
-                // Nascondi indicatore dopo che l'oggetto viene posizionato
-                setTimeout(() => {
-                    placementIndicator.classList.add('hidden');
-                    arControls.classList.add('active');
-                }, 3000); // Mostra per 3 secondi
-                
             } else if (event.detail.status === 'not-presenting') {
                 isInAR = false;
                 exitARButton.classList.remove('active');
                 arControls.classList.remove('active');
-                document.getElementById('ar-placement-indicator').classList.add('hidden');
             }
         });
 
