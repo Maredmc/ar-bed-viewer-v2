@@ -342,7 +342,7 @@
         <!-- Model Viewer -->
         <model-viewer
             id="bedModel"
-            src="models/scene.gltf"
+            src="scene.gltf"
             alt="Set Completo Camera da Letto"
             ar
             ar-modes="scene-viewer webxr quick-look"
@@ -482,22 +482,32 @@
         modelViewer.addEventListener('load', () => {
             console.log('✅ Model loaded successfully');
             
-            // Calcola le dimensioni del modello
+            // Ottieni le dimensioni del modello originale
             const bbox = modelViewer.getBoundingBoxCenter();
-            console.log('Model bounds:', bbox);
+            const dims = modelViewer.getDimensions();
             
-            // Dimensioni target: 190cm lunghezza, 80cm larghezza, 45cm altezza
-            // Converti in metri per AR: 1.9m x 0.8m x 0.45m
+            console.log('Original model size:', dims);
+            console.log('Model center:', bbox);
             
-            // Scala il modello per dimensioni reali
-            // Se il modello è già in scala corretta, usa scale="1 1 1"
-            // Altrimenti calcola la scala necessaria
-            modelViewer.scale = '0.01 0.01 0.01'; // Scala di partenza - regola se necessario
+            // Dimensioni target REALI del letto: 190cm x 80cm x 45cm
+            // In metri: 1.9m x 0.8m x 0.45m
             
-            // Per AR, imposta dimensioni reali in metri
-            modelViewer.setAttribute('ar-scale', 'auto');
+            // Calcola la scala necessaria
+            // Se il modello è molto grande/piccolo, aggiusta qui
+            const targetLength = 1.9; // 190cm in metri
+            const currentLength = dims.x > dims.z ? dims.x : dims.z; // Prendi la dimensione maggiore
             
-            console.log('Model scaled to real-world size: 1.9m x 0.8m x 0.45m');
+            // Scala basata sulla lunghezza target
+            const scale = targetLength / currentLength;
+            
+            console.log(`Calculated scale: ${scale}`);
+            console.log(`Target dimensions: 1.9m x 0.8m x 0.45m`);
+            
+            // Applica la scala calcolata
+            modelViewer.scale = `${scale} ${scale} ${scale}`;
+            
+            // Log finale
+            console.log(`Applied scale: ${scale}`);
         });
 
         // Error handling
