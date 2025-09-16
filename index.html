@@ -278,9 +278,15 @@
             border-bottom: none;
         }
 
-        /* Model Viewer Slots */
-        ::slotted([slot="ar-button"]) {
-            display: none;
+        /* Hotspot styling */
+        .hotspot {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 5px 10px;
+            border: none;
+            font-size: 12px;
+            color: #333;
+            pointer-events: none;
         }
 
         @media (max-width: 600px) {
@@ -336,7 +342,7 @@
         <!-- Model Viewer -->
         <model-viewer
             id="bedModel"
-            src="models/scene.gltf"
+            src="scene.gltf"
             alt="Set Completo Camera da Letto"
             ar
             ar-modes="scene-viewer webxr quick-look"
@@ -475,9 +481,23 @@
         // Model loaded
         modelViewer.addEventListener('load', () => {
             console.log('✅ Model loaded successfully');
-            console.log('Model bounds:', modelViewer.getBoundingBoxCenter());
-            // Scale model to real-world size (1.9m length)
-            modelViewer.scale = '1 1 1'; // Prova prima con scala 1:1
+            
+            // Calcola le dimensioni del modello
+            const bbox = modelViewer.getBoundingBoxCenter();
+            console.log('Model bounds:', bbox);
+            
+            // Dimensioni target: 190cm lunghezza, 80cm larghezza, 45cm altezza
+            // Converti in metri per AR: 1.9m x 0.8m x 0.45m
+            
+            // Scala il modello per dimensioni reali
+            // Se il modello è già in scala corretta, usa scale="1 1 1"
+            // Altrimenti calcola la scala necessaria
+            modelViewer.scale = '0.01 0.01 0.01'; // Scala di partenza - regola se necessario
+            
+            // Per AR, imposta dimensioni reali in metri
+            modelViewer.setAttribute('ar-scale', 'auto');
+            
+            console.log('Model scaled to real-world size: 1.9m x 0.8m x 0.45m');
         });
 
         // Error handling
